@@ -30,71 +30,71 @@ OUTGOING_URL = "https://www.facebook.com/friends/center/requests/outgoing/"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Delete Facebook friend requests in bulk."
+        description="Remove or cancel Facebook friend requests in bulk."
     )
     parser.add_argument(
         "--mode",
         choices=["incoming", "outgoing", "both"],
         default="both",
-        help="Which request list to clear.",
+        help="Which requests to process: incoming, outgoing, or both.",
     )
     parser.add_argument(
         "--max-actions",
         type=int,
         default=500,
-        help="Safety cap for total clicks.",
+        help="Maximum number of people to process in this run.",
     )
     parser.add_argument(
         "--profile-dir",
         default="facebook_profile",
-        help="Browser profile dir (keeps login session).",
+        help="Folder to save browser login data, so you stay signed in.",
     )
     parser.add_argument(
         "--headless",
         action="store_true",
-        help="Run without visible browser window.",
+        help="Run browser in the background (no visible window).",
     )
     parser.add_argument(
         "--pause",
         type=float,
         default=0.7,
-        help="Delay between actions in seconds.",
+        help="Seconds to wait between clicks.",
     )
     parser.add_argument(
         "--max-stuck-loops",
         type=int,
         default=8,
-        help="How many no-progress scroll loops before stopping.",
+        help="Stop after this many no-progress scroll loops.",
     )
     parser.add_argument(
         "--incoming-labels",
         default="delete,delete request,remove",
-        help="Comma-separated labels to match for incoming requests.",
+        help="Words to match for incoming buttons (comma-separated).",
     )
     parser.add_argument(
         "--outgoing-labels",
         default="cancel request,cancel",
-        help="Comma-separated labels to match for outgoing requests.",
+        help="Words to match for outgoing buttons (comma-separated).",
     )
     parser.add_argument(
         "--incoming-url",
         default=INCOMING_URL,
-        help="Override URL for incoming request page.",
+        help="Custom URL for the incoming requests page.",
     )
     parser.add_argument(
         "--outgoing-url",
         default=OUTGOING_URL,
-        help="Override URL for outgoing request page.",
+        help="Custom URL for the outgoing requests page.",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Detect and print matching buttons without clicking.",
+        help="Preview matches only (do not click anything).",
     )
     parser.add_argument(
         "--yes",
         action="store_true",
-        help="Skip destructive action confirmation prompt.",
+        help="Skip confirmation prompt and start immediately.",
     )
     return parser.parse_args()
 

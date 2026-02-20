@@ -7,7 +7,7 @@ Bulk-clear Facebook friend requests using browser automation with Playwright.
 - Clear incoming friend requests (`Delete`/`Remove`)
 - Clear outgoing friend requests (`Cancel request`)
 - Persistent browser profile so login is reused between runs
-- Safety cap for max clicks per run
+- Choose how many people to process each run with `--max-actions`
 - `--dry-run` mode to preview matches without clicking
 - Confirmation prompt before destructive runs (or bypass with `--yes`)
 - Custom label matching and URL overrides for localization/UI differences
@@ -38,17 +38,17 @@ python facebook_clear_requests.py --incoming-labels "delete,remove" --outgoing-l
 
 ### CLI options
 
-- `--mode` : `incoming`, `outgoing`, `both` (default)
-- `--max-actions` : max number of clicks in one run (default `500`)
-- `--profile-dir` : directory for persistent login session (default `facebook_profile`)
-- `--pause` : delay between clicks in seconds (default `0.7`)
-- `--headless` : run browser without UI
-- `--max-stuck-loops` : stop after N scroll loops with no progress (default `8`)
-- `--incoming-labels` : comma-separated labels to match for incoming requests
-- `--outgoing-labels` : comma-separated labels to match for outgoing requests
-- `--incoming-url` / `--outgoing-url` : override request page URLs
-- `--dry-run` : print matches without clicking
-- `--yes` : skip confirmation prompt
+- `--mode` : Which requests to process: `incoming`, `outgoing`, or `both` (default).
+- `--max-actions` : Maximum number of people to process in one run. Example: `--max-actions 100`.
+- `--profile-dir` : Folder where browser login data is saved so you stay signed in.
+- `--pause` : Seconds to wait between clicks.
+- `--headless` : Run browser in background (no visible window).
+- `--max-stuck-loops` : Stop after this many no-progress scroll loops.
+- `--incoming-labels` : Button words for incoming requests (comma-separated).
+- `--outgoing-labels` : Button words for outgoing requests (comma-separated).
+- `--incoming-url` / `--outgoing-url` : Custom request page URLs.
+- `--dry-run` : Preview matches only (no clicks).
+- `--yes` : Skip confirmation prompt and start immediately.
 
 ## Notes
 
