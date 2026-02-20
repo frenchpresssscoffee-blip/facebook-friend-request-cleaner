@@ -1,0 +1,17 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Playwright/browser state
+facebook_profile/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
