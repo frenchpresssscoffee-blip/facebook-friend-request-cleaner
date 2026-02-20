@@ -3,6 +3,7 @@
 Bulk-clear Facebook friend requests using browser automation.
 
 Usage:
+  python facebook_clear_requests.py --browser auto --mode both --max-actions 300
   python facebook_clear_requests.py --mode incoming
   python facebook_clear_requests.py --mode outgoing
   python facebook_clear_requests.py --mode both --max-actions 300
@@ -31,6 +32,12 @@ OUTGOING_URL = "https://www.facebook.com/friends/center/requests/outgoing/"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Remove or cancel Facebook friend requests in bulk."
+    )
+    parser.add_argument(
+        "--browser",
+        choices=["auto", "chrome", "edge", "chromium", "firefox"],
+        default="auto",
+        help="Browser to use. 'auto' tries installed Chrome/Edge first.",
     )
     parser.add_argument(
         "--mode",
@@ -97,6 +104,59 @@ def parse_args() -> argparse.Namespace:
         help="Skip confirmation prompt and start immediately.",
     )
     return parser.parse_args()
+
+
+def launch_browser_context(
+    p,
+    profile_dir: str,
+    headless: bool,
+    browser_choice: str,
+):
+    base_kwargs = {
+        "headless": headless,
+        "viewport": {"width": 1366, "height": 900},
+    }
+    attempts: list[tuple[str, object, dict, str]] = []
+
+    if browser_choice == "auto":
+        attempts.extend(
+            [
+                ("chrome", p.chromium, {"channel": "chrome", **base_kwargs}, "Google Chrome"),
+                (
+                    "edge",
+                    p.chromium,
+                    {"channel": "msedge", **base_kwargs},
+                    "Microsoft Edge",
+                ),
+                ("chromium", p.chromium, base_kwargs, "Playwright Chromium"),
+            ]
+        )
+    elif browser_choice == "chrome":
+        attempts.append(
+            ("chrome", p.chromium, {"channel": "chrome", **base_kwargs}, "Google Chrome")
+        )
+    elif browser_choice == "edge":
+        attempts.append(
+            ("edge", p.chromium, {"channel": "msedge", **base_kwargs}, "Microsoft Edge")
+        )
+    elif browser_choice == "chromium":
+        attempts.append(("chromium", p.chromium, base_kwargs, "Playwright Chromium"))
+    elif browser_choice == "firefox":
+        attempts.append(("firefox", p.firefox, base_kwargs, "Firefox"))
+    else:
+        raise ValueError(f"Unsupported browser choice: {browser_choice}")
+
+    errors: list[str] = []
+    for choice, browser_type, kwargs, label in attempts:
+        try:
+            context = browser_type.launch_persistent_context(profile_dir, **kwargs)
+            return context, choice, label
+        except Error as exc:
+            errors.append(f"{choice}: {exc}")
+
+    raise RuntimeError(
+        "Could not launch requested browser option. Errors:\n" + "\n".join(errors)
+    )
 
 
 def ensure_logged_in(page) -> None:
@@ -243,11 +303,18 @@ def main() -> int:
         return 1
 
     with sync_playwright() as p:
-        context = p.chromium.launch_persistent_context(
-            profile_dir,
-            headless=args.headless,
-            viewport={"width": 1366, "height": 900},
-        )
+        try:
+            context, selected_browser, selected_label = launch_browser_context(
+                p=p,
+                profile_dir=profile_dir,
+                headless=args.headless,
+                browser_choice=args.browser,
+            )
+        except RuntimeError as exc:
+            print(f"Error: {exc}")
+            return 1
+
+        print(f"Browser: {selected_label} ({selected_browser})")
         page = context.pages[0] if context.pages else context.new_page()
 
         try:

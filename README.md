@@ -29,6 +29,7 @@ playwright install chromium
 ## Usage
 
 ```powershell
+python facebook_clear_requests.py --browser auto --mode both --max-actions 300
 python facebook_clear_requests.py --mode incoming
 python facebook_clear_requests.py --mode outgoing
 python facebook_clear_requests.py --mode both --max-actions 300
@@ -38,6 +39,7 @@ python facebook_clear_requests.py --incoming-labels "delete,remove" --outgoing-l
 
 ### CLI options
 
+- `--browser` : Browser to use: `auto`, `chrome`, `edge`, `chromium`, or `firefox`. `auto` tries installed Chrome/Edge first.
 - `--mode` : Which requests to process: `incoming`, `outgoing`, or `both` (default).
 - `--max-actions` : Maximum number of people to process in one run. Example: `--max-actions 100`.
 - `--profile-dir` : Folder where browser login data is saved so you stay signed in.
@@ -53,6 +55,7 @@ python facebook_clear_requests.py --incoming-labels "delete,remove" --outgoing-l
 ## Notes
 
 - First run may require manual login and 2FA in the opened browser window.
+- `--browser auto` tries installed Chrome first, then Edge, then Playwright Chromium.
 - Facebook UI changes can break selectors or button labels; update patterns in the script as needed.
 - Use responsibly and in compliance with Facebook Terms.
 
